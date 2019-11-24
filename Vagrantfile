@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
     
     device.vm.hostname = "Spine1" 
     
-    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box = "./vagrant_files/cumulus-linux-3.7.6-vx-amd64-vbox.box"
     device.vm.provider "virtualbox" do |v|
       v.name = "Spine1"
       v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -53,7 +53,7 @@ end
     
     device.vm.hostname = "Spine2" 
     
-    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box = "./vagrant_files/cumulus-linux-3.7.6-vx-amd64-vbox.box"
     device.vm.provider "virtualbox" do |v|
       v.name = "Spine2"
       v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -90,7 +90,7 @@ end
     
     device.vm.hostname = "Leaf1" 
     
-    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box = "./vagrant_files/cumulus-linux-3.7.6-vx-amd64-vbox.box"
     device.vm.provider "virtualbox" do |v|
       v.name = "Leaf1"
       v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -130,7 +130,7 @@ end
     
     device.vm.hostname = "Leaf2" 
     
-    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box = "./vagrant_files/cumulus-linux-3.7.6-vx-amd64-vbox.box"
     device.vm.provider "virtualbox" do |v|
       v.name = "Leaf2"
       v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -170,7 +170,7 @@ end
     
     device.vm.hostname = "Leaf3" 
     
-    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box = "./vagrant_files/cumulus-linux-3.7.6-vx-amd64-vbox.box"
     device.vm.provider "virtualbox" do |v|
       v.name = "Leaf3"
       v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -210,7 +210,7 @@ end
     
     device.vm.hostname = "Leaf4" 
     
-    device.vm.box = ""
+    device.vm.box = "./vagrant_files/cumulus-linux-3.7.6-vx-amd64-vbox.box"
     device.vm.provider "virtualbox" do |v|
       v.name = "Leaf4"
       v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -250,7 +250,7 @@ end
     
     device.vm.hostname = "Server1" 
     
-    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box = "./vagrant_files/cumulus-linux-3.7.6-vx-amd64-vbox.box"
     device.vm.provider "virtualbox" do |v|
       v.name = "Server1"
       v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -282,7 +282,7 @@ end
     
     device.vm.hostname = "Server2" 
     
-    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box = "./vagrant_files/cumulus-linux-3.7.6-vx-amd64-vbox.box"
     device.vm.provider "virtualbox" do |v|
       v.name = "Server2"
       v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
