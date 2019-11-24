@@ -1,0 +1,12 @@
+[spines]
+Spine1 ansible_ssh_host=127.0.0.1 ansible_ssh_port=2222 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant ansible_sudo_pass='vagrant' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+Spine2 ansible_ssh_host=127.0.0.1 ansible_ssh_port=2200 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant ansible_sudo_pass='vagrant' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+[leafs]
+Leaf1 ansible_ssh_host=127.0.0.1 ansible_ssh_port=2201 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant ansible_sudo_pass='vagrant' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+Leaf2 ansible_ssh_host=127.0.0.1 ansible_ssh_port=2202 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant ansible_sudo_pass='vagrant' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+Leaf3 ansible_ssh_host=127.0.0.1 ansible_ssh_port=2203 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant ansible_sudo_pass='vagrant' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+Leaf4 ansible_ssh_host=127.0.0.1 ansible_ssh_port=2204 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant ansible_sudo_pass='vagrant' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+[servers]
+Server1 ansible_ssh_host=127.0.0.1 ansible_ssh_port=2205 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant ansible_sudo_pass='vagrant' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+Server2 ansible_ssh_host=127.0.0.1 ansible_ssh_port=2206 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant ansible_sudo_pass='vagrant' ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+

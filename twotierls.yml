@@ -1,0 +1,26 @@
+- hosts: leafs
+  gather_facts: false
+  user: cumulus
+  become: yes
+  become_method: sudo
+  roles:
+    - interfaces
+    - frr
+
+- hosts: spines
+  gather_facts: false
+  user: cumulus
+  become: yes
+  become_method: sudo
+  roles:
+    - frr
+
+
+- hosts: servers
+  gather_facts: false
+  user: cumulus
+  become: yes
+  become_method: sudo
+  roles:
+    - interfaces_server
+

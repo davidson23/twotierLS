@@ -1,0 +1,162 @@
+nodes:
+  Leaf1: 
+    lo: "10.254.0.1"
+    ports: 
+      - "swp1"
+      - "swp2"
+      - "swp3"
+      - "swp4"
+      - "swp5"
+    asn: 64513
+    neighbors:
+      - "swp2"
+      - "swp3"
+    networks:
+      - "10.1.20.0/24"
+      - "10.254.0.1/32"
+    peer-link:
+      bond-slaves:
+        - "swp4"
+        - "swp5"
+      vlan_4094:
+        address    : "169.254.1.1/30"
+        clag_backup: "192.168.0.12"
+        clag_peer  : "169.254.1.2"
+        clag_prio  : 1000
+        clag_mac   : "44:38:39:ff:00:01"
+    vlan20:
+      address: "10.1.20.253/24"
+      virtual: "10.1.20.254/32"
+  Leaf2:
+    lo: "10.254.0.2"
+    ports: 
+      - "swp1"
+      - "swp2"
+      - "swp3"
+      - "swp4"
+      - "swp5"
+    asn: 64514
+    neighbors:
+      - "swp2"
+      - "swp3"
+    networks:
+      - "10.1.20.0/24"
+      - "10.254.0.2/32"
+    peer-link:
+      bond-slaves:
+        - "swp4"
+        - "swp5"
+      vlan_4094:
+        address    : "169.254.1.2/30"
+        clag_backup: "192.168.0.11"
+        clag_peer  : "169.254.1.1"
+        clag_prio  : 2000
+        clag_mac   : "44:38:39:ff:00:01"
+    vlan20:
+      address: "10.1.20.252/24"
+      virtual: "10.1.20.254/32"
+  Leaf3:
+    lo: "10.254.0.3"
+    ports: 
+      - "swp1"
+      - "swp2"
+      - "swp3"
+      - "swp4"
+      - "swp5"
+    asn: 64515
+    neighbors:
+      - "swp2"
+      - "swp3"
+    networks:
+      - "10.3.20.0/24"
+      - "10.254.0.3/32"
+    peer-link:
+      bond-slaves:
+        - "swp4"
+        - "swp5"
+      vlan_4094:
+        address    : "169.254.1.1/30"
+        clag_backup: "192.168.0.14"
+        clag_peer  : "169.254.1.2"
+        clag_prio  : 1000
+        clag_mac   : "44:38:39:ff:00:03"
+    vlan20:
+      address: "10.3.20.253/24"
+      virtual: "10.3.20.254/32"
+  Leaf4:
+    lo: "10.254.0.4"
+    ports: 
+      - "swp1"
+      - "swp2"
+      - "swp3"
+      - "swp4"
+      - "swp5"
+    asn: 64516
+    neighbors:
+      - "swp2"
+      - "swp3"
+    networks:
+      - "10.3.20.0/24"
+      - "10.254.0.4/32"
+    peer-link:
+      bond-slaves:
+        - "swp4"
+        - "swp5"
+      vlan_4094:
+        address    : "169.254.1.2/30"
+        clag_backup: "192.168.0.13"
+        clag_peer  : "169.254.1.1"
+        clag_prio  : 2000
+        clag_mac   : "44:38:39:ff:00:03"
+    vlan20:
+      address: "10.3.20.252/24"
+      virtual: "10.3.20.254/32"
+  Spine1:
+    lo: "10.254.0.5"
+    ports: 
+      - "swp1"
+      - "swp2"
+      - "swp3"
+      - "swp4"
+    asn: 64500
+    neighbors:
+      - "swp1"
+      - "swp2"
+      - "swp3"
+      - "swp4"
+    networks:
+      - "10.254.0.5/32"
+  Spine2:
+    lo: "10.254.0.6"
+    ports: 
+      - "swp1"
+      - "swp2"
+      - "swp3"
+      - "swp4"
+    asn: 64500
+    neighbors:
+      - "swp1"
+      - "swp2"
+      - "swp3"
+      - "swp4"
+    networks:
+      - "10.254.0.6/32"
+  Server1:
+    interfaces:
+      bond0:
+        - "swp1"
+        - "swp2"
+      address: "10.1.20.1/24"
+      gateway: "10.1.20.254"
+  Server2:
+    interfaces:
+      bond0:
+        - "swp1"
+        - "swp2"
+      address: "10.3.20.1/24"
+      gateway: "10.3.20.254"
+  
+
+
+
+

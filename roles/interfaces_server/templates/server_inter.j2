@@ -1,0 +1,27 @@
+{# This is the template to generate the interface configuration for the Servers #}
+
+auto eth0
+iface eth0 inet dhcp
+
+
+{% for interface in nodes[inventory_hostname]['interfaces']['bond0'] %}
+auto {{ interface }} 
+iface {{ interface }} inet manual
+   bond-master bond0
+{% endfor %}
+#
+#
+auto bond0
+iface bond0 inet static
+   bond-slaves {{ nodes[inventory_hostname]['interfaces']['bond0'][0] }} {{ nodes[inventory_hostname]['interfaces']['bond0'][1] }}
+   bond-mode 802.3ad
+   bond-miimon 100
+   bond-use-carrier 1
+   bond-lacp-rate 1
+   bond-min-links 1
+   bond-xmit-hash-policy layer3+4
+   address {{ nodes[inventory_hostname]['interfaces']['address'] }}
+   post-up ifenslave bond0 {{ nodes[inventory_hostname]['interfaces']['bond0'][0] }} {{ nodes[inventory_hostname]['interfaces']['bond0'][1] }}
+   post-up ip link set bond0 promisc on
+   post-up ip route replace default via {{ nodes[inventory_hostname]['interfaces']['gateway']}} dev bond0
+

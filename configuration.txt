@@ -1,0 +1,487 @@
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Server1>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+sudo ip link set dev swp1 up
+sudo ip link set dev swp2 up
+
+sudo net add vrf mgmt vrf-table auto
+sudo net add interface eth0 vrf mgmt
+sudo net pending
+sudo net commit
+
+# bond config
+auto swp1 
+iface swp1 inet manual
+   bond-master bond0
+#
+auto swp2
+iface swp2 inet manual
+   bond-master bond0
+#
+auto bond0
+iface bond0 inet static
+   bond-slaves swp1 swp2
+   bond-mode 802.3ad
+   bond-miimon 100
+   bond-use-carrier 1
+   bond-lacp-rate 1
+   bond-min-links 1
+   bond-xmit-hash-policy layer3+4
+   address 10.1.20.1/24
+   post-up ifenslave bond0 swp1 swp2
+   post-up ip link set bond0 promisc on
+   #post-up ip route replace default via 10.1.20.254 dev bond0
+# bond config
+
+sudo route add default gw 10.1.20.254 dev bond0
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Server2>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+sudo ip link set dev swp1 up
+sudo ip link set dev swp2 up
+
+
+# bond config
+auto swp1 
+iface swp1 inet manual
+   bond-master bond0
+#
+auto swp2
+iface swp2 inet manual
+   bond-master bond0
+#
+auto bond0
+iface bond0 inet static
+   bond-slaves swp1 swp2
+   bond-mode 802.3ad
+   bond-miimon 100
+   bond-use-carrier 1
+   bond-lacp-rate 1
+   bond-min-links 1
+   bond-xmit-hash-policy layer3+4
+   address 10.3.20.1/24
+   post-up ifenslave bond0 swp1 swp2
+   post-up ip link set bond0 promisc on
+   #post-up ip route replace default via 10.1.20.254 dev bond0
+
+sudo route add default gw 10.3.20.254 dev bond0
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Leaf01>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+sudo ip link set dev swp1 up
+sudo ip link set dev swp2 up
+sudo ip link set dev swp3 up
+sudo ip link set dev swp4 up
+sudo ip link set dev swp5 up
+
+
+config t
+interface swp2
+ipv6 nd ra-interval 10
+no ipv6 nd suppress-ra
+
+interface swp3
+ipv6 nd ra-interval 10
+no ipv6 nd suppress-ra
+
+interface lo
+ip address 10.254.0.1/32
+
+!!!BGP configuration
+
+router bgp 64513
+bgp router-id 10.254.0.1
+bgp bestpath as-path multipath-relax
+bgp bestpath compare-routerid
+neighbor fabric peer-group
+neighbor fabric remote-as external
+neighbor fabric description Internal Fabric Network
+neighbor swp2 interface peer-group fabric
+neighbor swp3 interface peer-group fabric
+
+address-family ipv4 unicast
+network 10.1.20.0/24
+network 10.254.0.1/32
+exit-address-family
+
+address-family ipv6 unicast
+neighbor fabric activate
+exit-address-family
+
+!!!MLAG configuration 
+
+auto bond-swp1
+iface bond-swp1
+    bond-slaves swp1
+    bridge-access 20
+    clag-id 1
+
+auto bridge
+iface bridge
+    bridge-ports bond-swp1 peerlink
+    bridge-vids 20
+    bridge-vlan-aware yes
+
+
+auto mgmt
+iface mgmt
+    address 127.0.0.1/8
+    vrf-table auto
+
+auto peerlink
+iface peerlink
+    bond-slaves swp4 swp5
+
+auto peerlink.4094
+iface peerlink.4094
+    address 169.254.1.1/30
+    clagd-backup-ip 192.168.0.12 vrf mgmt
+    clagd-peer-ip 169.254.1.2
+    clagd-priority 1000
+    clagd-sys-mac 44:38:39:ff:00:01
+
+auto vlan20
+iface vlan20
+    address 10.1.20.253/24
+    address-virtual 00:00:5e:00:01:01 10.1.20.254/32
+    vlan-id 20
+    vlan-raw-device bridge
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Leaf02>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+sudo ip link set dev swp1 up
+sudo ip link set dev swp2 up
+sudo ip link set dev swp3 up
+sudo ip link set dev swp4 up
+sudo ip link set dev swp5 up
+
+config t
+interface swp2
+ipv6 nd ra-interval 10
+no ipv6 nd suppress-ra
+
+interface swp3
+ipv6 nd ra-interval 10
+no ipv6 nd suppress-ra
+
+interface lo
+ip address 10.254.0.2/32
+
+router bgp 64514
+bgp router-id 10.254.0.2
+bgp bestpath as-path multipath-relax
+bgp bestpath compare-routerid
+neighbor fabric peer-group
+neighbor fabric remote-as external
+neighbor fabric description Internal Fabric Network
+neighbor swp2 interface peer-group fabric
+neighbor swp3 interface peer-group fabric
+
+address-family ipv4 unicast
+network 10.1.20.0/24
+network 10.254.0.2/32
+exit-address-family
+
+address-family ipv6 unicast
+neighbor fabric activate
+exit-address-family
+
+
+!!!MLAG configuration 
+
+
+	
+auto bond-swp1
+iface bond-swp1
+    bond-slaves swp1
+    bridge-access 20
+    clag-id 1
+	
+auto bridge
+iface bridge
+    bridge-ports bond-swp1 peerlink
+    bridge-vids 20
+    bridge-vlan-aware yes
+
+auto mgmt
+iface mgmt
+    address 127.0.0.1/8
+    vrf-table auto
+
+auto peerlink
+iface peerlink
+    bond-slaves swp4 swp5
+
+auto peerlink.4094
+iface peerlink.4094
+    address 169.254.1.2/30
+    clagd-backup-ip 192.168.0.11 vrf mgmt
+    clagd-peer-ip 169.254.1.1
+    clagd-priority 2000
+    clagd-sys-mac 44:38:39:ff:00:01
+
+auto vlan20
+iface vlan20
+    address 10.1.20.252/24
+    address-virtual 00:00:5e:00:01:01 10.1.20.254/32
+    vlan-id 20
+    vlan-raw-device bridge
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Leaf03>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+sudo ip link set dev swp1 up
+sudo ip link set dev swp2 up
+sudo ip link set dev swp3 up
+sudo ip link set dev swp4 up
+sudo ip link set dev swp5 up
+
+config t
+interface swp2
+ipv6 nd ra-interval 10
+no ipv6 nd suppress-ra
+
+interface swp3
+ipv6 nd ra-interval 10
+no ipv6 nd suppress-ra
+
+interface lo
+ip address 10.254.0.3/32
+
+router bgp 64515
+bgp router-id 10.254.0.3
+bgp bestpath as-path multipath-relax
+bgp bestpath compare-routerid
+neighbor fabric peer-group
+neighbor fabric remote-as external
+neighbor fabric description Internal Fabric Network
+neighbor swp2 interface peer-group fabric
+neighbor swp3 interface peer-group fabric
+
+address-family ipv4 unicast
+network 10.3.20.0/24
+network 10.254.0.3/32
+exit-address-family
+
+address-family ipv6 unicast
+neighbor fabric activate
+exit-address-family
+
+!!!MLAG configuration 
+
+auto bond-swp1
+iface bond-swp1
+    bond-slaves swp1
+    bridge-access 20
+    clag-id 1
+	
+auto bridge
+iface bridge
+    bridge-ports bond-swp1 peerlink
+    bridge-vids 20
+    bridge-vlan-aware yes
+
+
+auto mgmt
+iface mgmt
+    address 127.0.0.1/8
+    vrf-table auto
+
+auto peerlink
+iface peerlink
+    bond-slaves swp4 swp5
+
+auto peerlink.4094
+iface peerlink.4094
+    address 169.254.1.1/30
+    clagd-backup-ip 192.168.0.14 vrf mgmt
+    clagd-peer-ip 169.254.1.2
+    clagd-priority 1000
+    clagd-sys-mac 44:38:39:ff:00:03
+	
+
+auto vlan20
+iface vlan20
+    address 10.3.20.253/24
+    address-virtual 00:00:5e:00:01:01 10.3.20.254/32
+    vlan-id 20
+    vlan-raw-device bridge
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Leaf04>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+sudo ip link set dev swp1 up
+sudo ip link set dev swp2 up
+sudo ip link set dev swp3 up
+sudo ip link set dev swp4 up
+sudo ip link set dev swp5 up
+
+config t
+interface swp2
+ipv6 nd ra-interval 10
+no ipv6 nd suppress-ra
+
+interface swp3
+ipv6 nd ra-interval 10
+no ipv6 nd suppress-ra
+
+
+interface lo
+ip address 10.254.0.4/32
+
+router bgp 64516
+bgp router-id 10.254.0.4
+bgp bestpath as-path multipath-relax
+bgp bestpath compare-routerid
+neighbor fabric peer-group
+neighbor fabric remote-as external
+neighbor fabric description Internal Fabric Network
+neighbor swp2 interface peer-group fabric
+neighbor swp3 interface peer-group fabric
+
+address-family ipv4 unicast
+network 10.3.20.0/24
+network 10.254.0.4/32
+exit-address-family
+
+address-family ipv6 unicast
+neighbor fabric activate
+exit-address-family
+
+!!!MLAG configuration 
+
+
+auto bond-swp1
+iface bond-swp1
+    bond-slaves swp1
+    bridge-access 20
+    clag-id 1
+	
+auto bridge
+iface bridge
+    bridge-ports bond-swp1 peerlink
+    bridge-vids 20
+    bridge-vlan-aware yes
+
+auto mgmt
+iface mgmt
+    address 127.0.0.1/8
+    vrf-table auto
+
+auto peerlink
+iface peerlink
+    bond-slaves swp4 swp5
+
+auto peerlink.4094
+iface peerlink.4094
+    address 169.254.1.2/30
+    clagd-backup-ip 192.168.0.13 vrf mgmt
+    clagd-peer-ip 169.254.1.1
+    clagd-priority 2000
+    clagd-sys-mac 44:38:39:ff:00:03
+
+auto vlan20
+iface vlan20
+    address 10.3.20.252/24
+    address-virtual 00:00:5e:00:01:01 10.3.20.254/32
+    vlan-id 20
+    vlan-raw-device bridge
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Spine01>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+sudo ip link set dev swp1 up
+sudo ip link set dev swp2 up
+sudo ip link set dev swp3 up
+sudo ip link set dev swp4 up
+
+config t
+interface swp1
+ipv6 nd ra-interval 10
+no ipv6 nd suppress-ra
+
+interface swp2
+ipv6 nd ra-interval 10
+no ipv6 nd suppress-ra
+
+interface swp3
+ipv6 nd ra-interval 10
+no ipv6 nd suppress-ra
+
+interface swp4
+ipv6 nd ra-interval 10
+no ipv6 nd suppress-ra
+
+interface lo
+ip address 10.254.0.5/32
+
+!!!BGP configuration
+
+router bgp 65500
+bgp router-id 10.254.0.5
+bgp bestpath as-path multipath-relax
+bgp bestpath compare-routerid
+neighbor fabric peer-group
+neighbor fabric remote-as external
+neighbor fabric description Internal Fabric Network
+neighbor swp1 interface peer-group fabric
+neighbor swp2 interface peer-group fabric
+neighbor swp3 interface peer-group fabric
+neighbor swp4 interface peer-group fabric
+
+address-family ipv4 unicast
+network 10.254.0.5/32
+exit-address-family
+
+address-family ipv6 unicast
+neighbor fabric activate
+exit-address-family
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Spine02>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+sudo ip link set dev swp1 up
+sudo ip link set dev swp2 up
+sudo ip link set dev swp3 up
+sudo ip link set dev swp4 up
+
+
+config t
+interface swp1
+ipv6 nd ra-interval 10
+no ipv6 nd suppress-ra
+
+interface swp2
+ipv6 nd ra-interval 10
+no ipv6 nd suppress-ra
+
+interface swp3
+ipv6 nd ra-interval 10
+no ipv6 nd suppress-ra
+
+interface swp4
+ipv6 nd ra-interval 10
+no ipv6 nd suppress-ra
+
+interface lo
+ip address 10.254.0.6/32
+
+!!!BGP configuration
+
+router bgp 65500
+bgp router-id 10.254.0.6
+bgp bestpath as-path multipath-relax
+bgp bestpath compare-routerid
+neighbor fabric peer-group
+neighbor fabric remote-as external
+neighbor fabric description Internal Fabric Network
+neighbor swp1 interface peer-group fabric
+neighbor swp2 interface peer-group fabric
+neighbor swp3 interface peer-group fabric
+neighbor swp4 interface peer-group fabric
+
+address-family ipv4 unicast
+network 10.254.0.6/32
+exit-address-family
+
+address-family ipv6 unicast
+neighbor fabric activate
+exit-address-family

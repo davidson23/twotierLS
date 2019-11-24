@@ -1,0 +1,17 @@
+
+# This step ensures that the frr daemon is running.
+- name: ensure frr is running
+  service: name=frr state=started
+
+- name: configure frr daemons file
+  copy: src=daemons dest=/etc/frr/daemons
+  notify:
+    - check frr
+    - restart frr
+
+- name: configure frr configuration
+  template: src=frr1.j2 dest=/etc/frr/frr.conf
+  notify:
+    - check frr
+    - restart frr
+

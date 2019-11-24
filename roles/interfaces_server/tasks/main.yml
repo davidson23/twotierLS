@@ -1,0 +1,4 @@
+- name: configure interface configuration
+  template: src=server_inter.j2 dest=/etc/network/interfaces
+  notify:
+    - restart interfaces

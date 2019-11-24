@@ -1,0 +1,4 @@
+- name: restart interfaces
+  #command: ifreload -a
+  shell: ifdown --force -a && ifup --force -a
+

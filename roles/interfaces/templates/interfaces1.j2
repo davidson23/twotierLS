@@ -1,0 +1,40 @@
+{# This is the template to generate the interface configuration for the Leaf Switches #}
+
+auto eth0
+iface eth0 inet dhcp
+
+auto bond-swp1
+iface bond-swp1
+    bond-slaves swp1
+    bridge-access 20
+    clag-id 1
+	
+auto bridge
+iface bridge
+    bridge-ports bond-swp1 peerlink
+    bridge-vids 20
+    bridge-vlan-aware yes
+
+auto mgmt
+iface mgmt
+    address 127.0.0.1/8
+    vrf-table auto
+
+auto peerlink
+iface peerlink
+    bond-slaves {{ nodes[inventory_hostname]['peer-link']['bond-slaves'][0]}} {{ nodes[inventory_hostname]['peer-link']['bond-slaves'][1]}}
+
+auto peerlink.4094
+iface peerlink.4094
+    address {{ nodes[inventory_hostname]['peer-link']['vlan_4094']['address'] }}
+    clagd-backup-ip {{ nodes[inventory_hostname]['peer-link']['vlan_4094']['clag_backup']}} vrf mgmt
+    clagd-peer-ip {{ nodes[inventory_hostname]['peer-link']['vlan_4094']['clag_peer'] }}
+    clagd-priority {{ nodes[inventory_hostname]['peer-link']['vlan_4094']['clag_prio'] }}
+    clagd-sys-mac {{ nodes[inventory_hostname]['peer-link']['vlan_4094']['clag_mac'] }}
+
+auto vlan20
+iface vlan20
+    address {{ nodes[inventory_hostname]['vlan20']['address'] }}
+    address-virtual 00:00:5e:00:01:01 {{ nodes[inventory_hostname]['vlan20']['virtual'] }}
+    vlan-id 20
+    vlan-raw-device bridge
