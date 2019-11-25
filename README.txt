@@ -18,6 +18,7 @@ Ansible is a Devops tool which is used to configure the network device.
 Below are some other requirements/recommendations
 1.If you wish to run this setup please note that running this simulation uses more than 8G of RAM.
 2.The Ansible is installed in the host machine itself and not on a separate virtual machine.So configuration is to be done in such a way that the Ansible in the host can connect the individual virtual machines and configure it.
+3.Download the "cumulus-linux-3.7.6-vx-amd64-vbox.box" software or any other higher version and place it in the "vagrant_files" directory after the git clone is made.
 
 Topology and other configuration related files
 ==============================================
